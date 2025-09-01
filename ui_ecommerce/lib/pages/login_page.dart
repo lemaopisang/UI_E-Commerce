@@ -12,6 +12,22 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Added state variable for show/hide password feature
+  bool _passwordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordVisible = false;
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,20 +57,34 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       children: [
+        // This acts as the e-commerce logo
+        CircleAvatar(
+          radius: 40,
+          backgroundColor: Theme.of(context).primaryColor,
+          child: const Text(
+            'N',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
         Text(
-          'Welcome Back!',
+          'NovaShop',
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF4C53A5),
+            color: Theme.of(context).primaryColor,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 6),
         Text(
-          'Login to Continue',
-          style: TextStyle(fontSize: 18, color: Color(0xFF4C53A5)),
+          'Welcome back — login to continue',
+          style: TextStyle(fontSize: 18, color: Theme.of(context).primaryColor),
         ),
       ],
     );
@@ -65,15 +95,15 @@ class _LoginPageState extends State<LoginPage> {
       controller: _emailController,
       decoration: InputDecoration(
         labelText: 'Email',
-        prefixIcon: const Icon(Icons.email, color: Color(0xFF4C53A5)),
+        prefixIcon: Icon(Icons.email, color: Theme.of(context).primaryColor),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Email tidak boleh kosong';
+          return 'Email tidak boleh kosong'; // Email cannot be empty
         }
         if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-          return 'Format email tidak valid';
+          return 'Format email tidak valid'; // Invalid email format
         }
         return null;
       },
@@ -81,20 +111,34 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildPasswordField() {
+    // This is the updated method with the show/hide password feature
     return TextFormField(
       controller: _passwordController,
+      obscureText: !_passwordVisible,
       decoration: InputDecoration(
         labelText: 'Password',
-        prefixIcon: const Icon(Icons.lock, color: Color(0xFF4C53A5)),
+        prefixIcon: Icon(Icons.lock, color: Theme.of(context).primaryColor),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        // Added the suffix icon with the IconButton to toggle visibility
+        suffixIcon: IconButton(
+          icon: Icon(
+            _passwordVisible ? Icons.visibility : Icons.visibility_off,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {
+            // Update the state to toggle password visibility
+            setState(() {
+              _passwordVisible = !_passwordVisible;
+            });
+          },
+        ),
       ),
-      obscureText: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Password tidak boleh kosong';
+          return 'Password tidak boleh kosong'; // Password cannot be empty
         }
         if (value.length <= 6) {
-          return 'Password minimal 6 karakter';
+          return 'Password minimal 6 karakter'; // Password must be at least 6 characters
         }
         return null;
       },
@@ -105,11 +149,15 @@ class _LoginPageState extends State<LoginPage> {
     return ElevatedButton(
       onPressed: () {
         if (_formKey.currentState!.validate()) {
-          Navigator.pushReplacementNamed(context, 'AccountPage');
+          // You would handle the login logic here
+          // For this example, we'll just show a simple snackbar.
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login berhasil!')),
+          );
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF4C53A5),
+        backgroundColor: Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
@@ -121,12 +169,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildSignupLink(BuildContext context) {
-    return TextButton(onPressed: () {
-      Navigator.pushNamed(context, '/');
-    },
-    child: const Text(
-      "Don't have an account? Sign Up.",
-      style: TextStyle(color: Color(0xFF4C53A5)),
-    ));
+    return TextButton(
+      onPressed: () {
+        // Navigates to the new RegisterPage
+        Navigator.pushNamed(context, 'RegisterPage');
+      },
+      child: Text(
+        "Don't have an account? Sign Up.",
+        style: TextStyle(color: Theme.of(context).primaryColor),
+      ),
+    );
   }
 }
